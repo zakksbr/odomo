@@ -15,9 +15,37 @@ class Chauffage {
     static int[][] creneau2;
     
     /**
+     * Temperature souhaité en mode éco
+     */
+    static double temperEco;
+    
+    /**
+     * temperature souhaité en mode normal
+     */
+    static double temperNormal;
+    
+    
+    /**
      * Initialiser les données de chauffage.
      */
     static void initialiser() {
+        creneau1 = new int [7][2];
+        creneau2 = new int [7][2];
+        
+        temperEco = 17.0;                   //par exmpl 17°c
+        temperNormal = 20.0;                //par exmpl 20 c
+        
+        for (int i = 0; i < 7; i++){
+        creneau1[i][0] = 1;
+        creneau1[i][1] = 0;
+        creneau2[i][0] = 1;
+        creneau2[i][1] = 0;
+        
+        }
+        
+        
+        
+        
     }
 
     /**

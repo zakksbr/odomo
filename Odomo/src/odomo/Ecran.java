@@ -201,10 +201,13 @@ class Ecran {
         };
     }
 
-    static String titreHisto() {
-        String titre = "";
-        return titre;
+static String titreHisto() {
+    if (typeHisto == TYPE_HISTO_PLUVIO_HEURE) {             
+        return "Pluviométrie des 24 dernières heures :";
+    } else { 
+        return "";
     }
+}
 
     /**
      * Motif d'une ligne de l'histogramme.
@@ -286,13 +289,21 @@ class Ecran {
      * @return la légende de l'histogramme
      */
     static String histoLegendeOrdonnee(int ligne) {
-        String legende = "";
-        int valeur = -10000;
-        // ...
-        if (valeur != -10000) {
-            legende = "" + valeur;
+        if (typeHisto == TYPE_HISTO_PLUVIO_HEURE){
+        double maxPluvio = Meteo.valeurMax(Meteo.pluvioHeure);
+        if (ligne == 0){
+        return "" + Math.round(maxPluvio);          // on erajoute math.round pour arrondir
         }
-        return legende;
+        if (ligne == 4){
+        return "" + Math.round(maxPluvio / 2.0);
+        }
+        if (ligne == 8){
+        return "0"; 
+        }
+        
+        
+      }
+        return "";
     }
 
     /**

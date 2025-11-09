@@ -88,6 +88,21 @@ class Meteo {
     static double hygroExt;
 
     /**
+     * Hygrométrie moyenne par minute
+     */
+    static double[] hygroMinute;
+
+    /**
+     * Hygrométrie moyenne par heure
+     */
+    static double[] hygroHeure;
+
+    /**
+     * Hygrométrie moyenne par jour
+     */
+    static double[] hygroJour;
+
+    /**
      * Pression courante;
      */
     static double pression;
@@ -173,7 +188,7 @@ class Meteo {
      * @return vrai ssi l'ensoleillement est supérieur ou égal à 120 W/M2
      */
     static boolean insolation() {
-        return ensoleillement >= 120;
+        return ensoleillement >= 120; //
     }
 
     /**
@@ -184,6 +199,36 @@ class Meteo {
     static double majPluvioMinute() {
         pluvioMinute[0] = aleatoire(0., 5.);
         return pluvioMinute[0];
+    }
+
+    /**
+     * hygrométrie de la minute en cours
+     *
+     * @return l'hygrométrie de la minute en cours
+     */
+    static double majHygroMinute() {
+        hygroMinute[0] = aleatoire(20., 80.);
+        return hygroMinute[0];
+    }
+
+    /**
+     * hygrométrie de l'heure en cours
+     *
+     * @return l'hygrométrie de l'heure en cours
+     */
+    static double majHygroHeure() {
+        hygroHeure[0] = aleatoire(20., 80.);
+        return hygroHeure[0];
+    }
+
+    /**
+     * hygrométrie du jour en cours
+     *
+     * @return l'hygométrie du jour en cours
+     */
+    static double majHygroJour() {
+        hygroJour[0] = aleatoire(20., 80.);
+        return hygroJour[0];
     }
 
     /**
@@ -224,11 +269,13 @@ class Meteo {
         temperExtMaxJour = new double[365];
         temperExtMoyJour = new double[365];
         pluvioJour = new double[365];
+        hygroJour = new double[365]; 
         for (int i = 0; i < 365; i++) {
             temperExtMoyJour[i] = aleatoire(-10., 40.);
             temperExtMinJour[i] = temperExtMoyJour[i] - aleatoire(5., 10.);
             temperExtMaxJour[i] = temperExtMoyJour[i] + aleatoire(5., 10.);
             pluvioJour[i] = Math.max(0., aleatoire(0., 60.) - 40.);
+            hygroJour[i] = aleatoire(20., 80.); 
         }
     }
 
@@ -240,12 +287,15 @@ class Meteo {
         temperExtMoyHeure = new double[24];
         temperExtMaxHeure = new double[24];
         pluvioHeure = new double[24];
+        hygroHeure = new double[24]; 
         for (int i = 0; i < 24; i++) {
             temperExtMoyHeure[i] = aleatoire(-10., 40.);
             temperExtMinHeure[i] = temperExtMoyHeure[i] - aleatoire(0.5, 3.);
             temperExtMaxHeure[i] = temperExtMoyHeure[i] + aleatoire(0.5, 3.);
             pluvioHeure[i] = Math.max(0., aleatoire(0., 50.) - 40.);
+            hygroHeure[i] = aleatoire(0., 80.); 
         }
+
     }
 
     /**
@@ -256,11 +306,13 @@ class Meteo {
         temperExtMoyMinute = new double[60];
         temperExtMaxMinute = new double[60];
         pluvioMinute = new double[60];
+        hygroMinute = new double[60]; 
         for (int i = 0; i < 60; i++) {
             temperExtMoyMinute[i] = aleatoire(-10., 40.);
             temperExtMinMinute[i] = temperExtMoyMinute[i] - aleatoire(0., 2.);
             temperExtMaxMinute[i] = temperExtMoyMinute[i] + aleatoire(0., 2.);
             pluvioMinute[i] = Math.max(0., aleatoire(0., 50.) - 45.);
+            hygroMinute[i] = aleatoire(20., 80); //
         }
     }
 
@@ -274,32 +326,67 @@ class Meteo {
         finMinuteTemperExtMax();
         finMinutePluvio();
     }
-    
+
     /**
      * Mise à jour des données liées à la température extérieure minimale, en
      * fin de minute.
      */
     static void finMinuteTemperExtMin() {
+        if (temperExtMinMinute[0]<temperExtMinHeure[0]){
+        temperExtMinHeure[0] = temperExtMinMinute[0];
+        }
+        if (temperExtMinMinute[0]<temperExtMinJour[0]) {
+        temperExtMinJour[0] = temperExtMinMinute[0];
+        }
+        
+        decalageDroite(temperExtMinMinute);
+        temperExtMinMinute[0] = temperExt;
     }
-    
+
     /**
-     * Mise à jour des données liées à la température extérieure moyenne, en
-     * fin de minute.
+     * Mise à jour des données liées à la température extérieure moyenne, en fin
+     * de minute.
      */
     static void finMinuteTemperExtMoy() {
+        double sommeMinutes = 0;
+        double sommeHeure = 0;
+        for (int i = 0; i < temperExtMoyMinute.length; i++) {
+            sommeMinutes += temperExtMoyMinute[i];
+        }
+        temperExtMoyHeure[0] = sommeMinutes / temperExtMoyMinute.length;
+        
+        for (int i=0; i < temperExtMoyHeure.length; i++){
+            sommeHeure += temperExtMoyHeure[i];
+        }
+        temperExtMoyJour[0] = sommeHeure / temperExtMoyHeure.length;
+        
+        decalageDroite(temperExtMoyMinute);
+        temperExtMoyMinute[0] = temperExt;
     }
-    
+
     /**
      * Mise à jour des données liées à la température extérieure maximale, en
      * fin de minute.
      */
     static void finMinuteTemperExtMax() {
+        if (temperExtMaxMinute[0]>temperExtMaxHeure[0]){
+        temperExtMaxHeure[0] = temperExtMaxMinute[0];
+        }
+        if (temperExtMaxMinute[0]>temperExtMaxJour[0]){
+        temperExtMaxJour[0] = temperExtMaxMinute[0];
+        }
+        decalageDroite(temperExtMaxMinute);
+        temperExtMaxMinute[0] = temperExt;
     }
-    
+
     /**
      * Mise à jour des données liées à la pluviométrie, en fin de minute.
      */
     static void finMinutePluvio() {
+        pluvioHeure[0] += pluvioMinute[0];
+        pluvioJour[0] += pluvioMinute[0];   
+        decalageDroite(pluvioMinute);
+        pluvioMinute[0] = 0;
     }
 
     /**
@@ -310,40 +397,73 @@ class Meteo {
         finHeureTemperExt();
         finHeurePluvio();
     }
-    
+
     /**
      * Mise à jour des données de pluviométrie chaque heure.
      */
     static void finHeurePluvio() {
+        decalageDroite(pluvioHeure);
+        pluvioHeure[0] = 0;
     }
 
     /**
      * Mise à jour des données de température extérieure chaque heure.
      */
     static void finHeureTemperExt() {
+        decalageDroite(temperExtMinHeure);
+        temperExtMinHeure[0] = temperExt;
+        decalageDroite(temperExtMoyHeure);
+        temperExtMoyHeure[0] = temperExt;
+        decalageDroite(temperExtMaxHeure);
+        temperExtMaxHeure[0] = temperExt;
     }
 
     /**
      * Mise à jour des données de température extérieure chaque jour.
      */
     static void finJourTemperExt() {
+        decalageDroite(temperExtMinJour);
+        temperExtMinJour[0] = temperExt;
+        decalageDroite(temperExtMoyJour);
+        temperExtMoyJour[0] = temperExt;
+        decalageDroite(temperExtMaxJour);
+        temperExtMaxJour[0] = temperExt;
     }
 
     /**
      * Mise à jour des données de pluviométrie chaque jour.
      */
     static void finJourPluvio() {
+        decalageDroite(pluvioJour);
+        pluvioJour[0] = 0;
     }
-    
+
     /**
      * Test de cohérence des données stockées sur les températures par minute.
-     * 
+     *
      * @return vrai ssi les données de températures par minute sont cohérentes
      */
     static boolean temperaturesCoherentes() {
+        for (int i = 0; i < 60; i++) {
+            if (temperExtMinMinute[i] > temperExtMoyMinute[i]) {
+                return false;
+            }
+            if (temperExtMoyMinute[i] > temperExtMaxMinute[i]) {
+                return false;
+            }
+        }
+
+        for (int i = 1; i < 60; i++) {
+            if (temperExtMinMinute[i] < temperExtMinHeure[0]) {
+                return false;
+            }
+            if (temperExtMaxMinute[i] > temperExtMaxHeure[0]) {
+                return false;
+            }
+        }
         return true;
     }
-    
+
     /**
      * Décaler les valeurs d'un tableau d'un rang vers la droite. La dernière
      * valeur est perdue, et la première est dupliquée (tab[0] et tab[1]).
@@ -351,6 +471,9 @@ class Meteo {
      * @param tab le tableau à modifier
      */
     static void decalageDroite(double[] tab) {
+        for (int i = tab.length -1; i > 0; i--) {  
+            tab[i] = tab[i - 1];
+        }
     }
 
     /**
@@ -360,7 +483,23 @@ class Meteo {
      */
     static boolean[][] matricePluvioHeure() {
         boolean[][] matricePluvio = new boolean[8][24];
-        // ...
+        double maxPluvio = valeurMax(pluvioHeure);
+        for(int colonne = 0; colonne < 24; colonne++){
+        double valeurHeure = pluvioHeure[23 - colonne];
+        int nbCasesAAlumer;
+        if (valeurHeure == 0){
+        nbCasesAAlumer = 0;
+        }else{
+            int ligneHaut = Ecran.numLigne(valeurHeure, 0.0, maxPluvio);
+            nbCasesAAlumer = 8 - ligneHaut;
+        }
+        
+        allumerNbCasesDuBas(matricePluvio, colonne, nbCasesAAlumer);
+       
+        
+        }
+        
+        
         return matricePluvio;
     }
 
@@ -371,12 +510,12 @@ class Meteo {
      */
     static boolean[][] matriceTemperMinutes() {
         boolean[][] matriceTemper = new boolean[8][24];
-        // ...
         return matriceTemper;
     }
 
     /**
      * Permet d'agréger 60 valeurs dans les 24 colonnes de l'histogramme.
+     *
      * @param col numéro de la colonne de l'histogramme
      * @return ensemble d'indices des 60 valeurs correspondantes
      */
@@ -387,6 +526,7 @@ class Meteo {
     /**
      * Extrait les valeurs d'un tableau de doubles, à partir d'un tableau
      * d'indices.
+     *
      * @param tab tableau parmi lequel extraire
      * @param indices indices des valeurs à extraires
      * @return tableau de valeurs extraites
@@ -398,19 +538,27 @@ class Meteo {
     /**
      * Positionne les booléens d'une colonne de la matrice, pour un nombre de
      * cases à allumer donné depuis le bas.
-     * 
+     *
      * @param matrice la matrice booléenne à initialiser
      * @param colonne la colonne de la matrice considérée
      * @param nbCases le nombre de cases à allumer dans cette colonne
      */
     static void allumerNbCasesDuBas(boolean[][] matrice, int colonne, int nbCases) {
+    int ligneHaut = 8 - nbCases;
+    for(int ligne = 0; ligne< matrice.length; ligne++){
+    if (ligne < ligneHaut){
+    matrice[ligne][colonne] = false;
+    } else {
+    matrice[ligne][colonne] = true;
     }
-    
+    }
+    }
+
     /**
      * Positionne les booléens d'une colonne de la matrice, entre deux lignes
      * données. Attention il s'agit ici de lignes de l'histogramme, donc en
      * particulier ligneBas >= ligneHaut.
-     * 
+     *
      * @param matrice la matrice booléenne à initialiser
      * @param colonne la colonne de la matrice considérée
      * @param ligneBas le numéro de la ligne du bas à allumer
@@ -427,7 +575,18 @@ class Meteo {
      * @return la valeur maximale du tableau, ou 0 s'il est vide.
      */
     static double valeurMax(double[] tab) {
-        return 100.;
+        if (tab.length == 0){
+        return 0;
+        }
+        
+        double max = tab[0];
+
+        for(int i=1; i < tab.length; i++){
+        if(tab[i]>max){
+        max = tab[i];
+        } 
+        }
+        return max;
     }
 
     /**
@@ -437,7 +596,7 @@ class Meteo {
      * @return la valeur minimale du tableau, ou 0 s'il est vide.
      */
     static double valeurMin(double[] tab) {
-        return 12.;
+        return 12.; 
     }
 
     /**
@@ -453,18 +612,16 @@ class Meteo {
 
     /**
      * Affiche une matrice booléenne sur la sortie standard.
-     * 
+     *
      * @param t la matrice booléenne à afficher
      */
     static void afficherMatrice(boolean[][] t) {
         int nbCol = t[0].length;
-        // ligne d'entête
         System.out.print("  ");
         for (int c = 0; c < nbCol; c++) {
             System.out.print(String.format(" %2d", c));
         }
         System.out.println();
-        // lignes de contenu
         for (int l = 0; l < t.length; l++) {
             System.out.print(String.format("%2d", l));
             for (int c = 0; c < nbCol; c++) {
