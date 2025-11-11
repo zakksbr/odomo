@@ -55,6 +55,30 @@ class Chauffage {
      */
     static boolean[][] matriceCreneaux() {
         boolean[][] matrice = new boolean[8][24];
+        
+        for (int jour = 0; jour < 7; jour++) {
+
+            int debut1 = creneau1[jour][0];
+            int fin1 = creneau1[jour][1];
+            int debut2 = creneau2[jour][0];
+            int fin2 = creneau2[jour][1];
+
+            for (int heure = 0; heure < 24; heure++) {
+                boolean dansCreneau1 = (heure >= debut1 && heure <= fin1);
+
+                boolean dansCreneau2 = (heure >= debut2 && heure <= fin2);
+
+                if (dansCreneau1 || dansCreneau2) {
+                    matrice[jour][heure] = true;
+
+                }
+
+            }
+
+        }
+        
+        
+        
         return matrice;
     }
     
@@ -62,6 +86,24 @@ class Chauffage {
      * Procédure de saisie des créneaux de chauffage.
      */
     static void saisieCreneaux() {
+    java.util.Scanner sc = new java.util.Scanner(System.in); // on déclare notre scanner (déjà utilisé dans la classe odomo)
+    boolean saisieCorrecte;
+    
+        System.out.println("saisie des créneaux");
+        System.out.println("saisissez par exemple: ven;8;10;16;20");
+        
+    do{
+        System.out.println("votre saisie?");
+        
+        String saisie = sc.nextLine();                          //on stoque notre saisie daans la variable "saisie"
+        saisieCorrecte = traitementSaisieCreneaux(saisie);
+         if (!saisieCorrecte) {
+            System.out.println("Erreur. Veuillez réessayer.");
+        }
+    } while (!saisieCorrecte);
+        
+        
+        System.out.println("créneaux maj.");
     }
 
     
