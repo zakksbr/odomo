@@ -15,12 +15,12 @@ class Chauffage {
     static int[][] creneau2;
     
     /**
-     * Temperature souhaité en mode éco
+     * Temp souhaité en mode éco
      */
     static double temperEco;
     
     /**
-     * temperature souhaité en mode normal
+     * temp souhaité en mode normal
      */
     static double temperNormal;
     
@@ -58,27 +58,17 @@ class Chauffage {
         
         for (int jour = 0; jour < 7; jour++) {
 
-            int debut1 = creneau1[jour][0];
-            int fin1 = creneau1[jour][1];
-            int debut2 = creneau2[jour][0];
-            int fin2 = creneau2[jour][1];
-
             for (int heure = 0; heure < 24; heure++) {
-                boolean boleeenCreneau1 = (heure >= debut1 && heure <= fin1);
+                boolean boleeenCreneau1 = (heure >= creneau1[jour][0] && heure <= creneau1[jour][1]);
 
-                boolean booleenCreneau2 = (heure >= debut2 && heure <= fin2);
+                boolean booleenCreneau2 = (heure >= creneau2[jour][0] && heure <= creneau2[jour][1]);
 
                 if (boleeenCreneau1 || booleenCreneau2) {
                     matrice[jour][heure] = true;
 
                 }
-
             }
-
         }
-        
-        
-        
         return matrice;
     }
     
