@@ -64,11 +64,11 @@ class Chauffage {
             int fin2 = creneau2[jour][1];
 
             for (int heure = 0; heure < 24; heure++) {
-                boolean dansCreneau1 = (heure >= debut1 && heure <= fin1);
+                boolean boleeenCreneau1 = (heure >= debut1 && heure <= fin1);
 
-                boolean dansCreneau2 = (heure >= debut2 && heure <= fin2);
+                boolean booleenCreneau2 = (heure >= debut2 && heure <= fin2);
 
-                if (dansCreneau1 || dansCreneau2) {
+                if (boleeenCreneau1 || booleenCreneau2) {
                     matrice[jour][heure] = true;
 
                 }
