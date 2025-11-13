@@ -202,13 +202,11 @@ class Ecran {
     }
 
 static String titreHisto() {
-    if (typeHisto == TYPE_HISTO_PLUVIO_HEURE) {             
-        return "Pluviométrie des 24 dernières heures :";
-    } else if (typeHisto == TYPE_HISTO_TEMPER_MINUTES){
-    return "Temp des 60 dernieres minutes :";
-    } else {
-        return "";
-    }
+        return switch (typeHisto) {         // J'etais parti sur des if successif, finalement j'ai opté pour un switch comme ma reccomandé netBeans
+            case TYPE_HISTO_PLUVIO_HEURE -> "Pluviométrie des 24 dernières heures :";
+            case TYPE_HISTO_TEMPER_MINUTES -> "Temp des 60 dernieres minutes :";
+            default -> "";
+        };
 }
 
     /**
@@ -301,6 +299,20 @@ static String titreHisto() {
         }
         if (ligne == 8){
         return "0"; 
+        } else if (typeHisto == TYPE_HISTO_TEMPER_MINUTES) {         //J'ai essayé d'integrer un switch, mais sans succès puisque j'ai eu une erreur qui a persister
+            double totmin = Meteo.valeurMin(Meteo.temperExtMinMinute);
+            double totmax = Meteo.valeurMax(Meteo.temperExtMaxMinute);
+
+            if (ligne == 0) {
+                return "" + Math.round(totmax);
+            }
+            if (ligne == 4) {
+                double moyenne = (totmin + totmax) / 2.0;
+                return "" + Math.round(moyenne);
+            }
+            if (ligne == 8) {
+                return "" + Math.round(totmin); 
+            }
         }
         
         

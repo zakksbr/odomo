@@ -351,12 +351,12 @@ class Meteo {
         double sommeMinutes = 0;
         double sommeHeure = 0;
         for (int i = 0; i < temperExtMoyMinute.length; i++) {
-            sommeMinutes += temperExtMoyMinute[i];
+            sommeMinutes = sommeMinutes + temperExtMoyMinute[i];
         }
         temperExtMoyHeure[0] = sommeMinutes / temperExtMoyMinute.length;
 
         for (int i = 0; i < temperExtMoyHeure.length; i++) {
-            sommeHeure += temperExtMoyHeure[i];
+            sommeHeure = sommeHeure + temperExtMoyHeure[i];
         }
         temperExtMoyJour[0] = sommeHeure / temperExtMoyHeure.length;
 
@@ -383,8 +383,8 @@ class Meteo {
      * Mise à jour des données liées à la pluviométrie, en fin de minute.
      */
     static void finMinutePluvio() {
-        pluvioHeure[0] += pluvioMinute[0];
-        pluvioJour[0] += pluvioMinute[0];
+        pluvioHeure[0] = pluvioHeure[0]+pluvioMinute[0];
+        pluvioJour[0] = pluvioJour[0] + pluvioMinute[0];
         decalageDroite(pluvioMinute);
         pluvioMinute[0] = 0;
     }
@@ -507,9 +507,22 @@ class Meteo {
      * @return la matrice de températures
      */
     static boolean[][] matriceTemperMinutes() {
-        boolean[][] matriceTemper = new boolean[8][24];
-        return matriceTemper;
+    boolean[][] matrice = new boolean[8][24];
+    double borneMin = valeurMin(temperExtMinMinute);
+    double borneMax = valeurMax(temperExtMaxMinute);
+
+    for (int c = 0; c < 24; c++) {
+        int[] minutes = agreger60vers24(c);
+        double minCol = valeurMin(tableauDepuisIndices(temperExtMinMinute, minutes));
+        double maxCol = valeurMax(tableauDepuisIndices(temperExtMaxMinute, minutes));
+
+        int posHaut = Ecran.numLigne(maxCol, borneMin, borneMax);
+        int posBas = Ecran.numLigne(minCol, borneMin, borneMax);
+
+        allumerNbCasesIntervalle(matrice, c, posBas, posHaut);
     }
+    return matrice;
+}
 
     /**
      * Permet d'agréger 60 valeurs dans les 24 colonnes de l'histogramme.
@@ -518,7 +531,29 @@ class Meteo {
      * @return ensemble d'indices des 60 valeurs correspondantes
      */
     static int[] agreger60vers24(int col) {
-        return null;
+        int minDep = 0;
+    
+    for (int i = 23; i > col; i--){
+    if (i%2==0){
+    minDep = minDep + 2;
+    }else{
+    minDep =minDep + 3;
+    }
+    
+    }
+        if (col%2==0) { 
+            int[] indices = new int[2];
+            indices[0] = minDep;
+            indices[1] = minDep + 1;
+            return indices;
+        } else { 
+            int[] indices = new int[3];
+            indices[0] = minDep;
+            indices[1] = minDep + 1;
+            indices[2] = minDep + 2;
+            return indices;
+        }
+
     }
 
     /**
@@ -530,7 +565,12 @@ class Meteo {
      * @return tableau de valeurs extraites
      */
     static double[] tableauDepuisIndices(double[] tab, int[] indices) {
-        return null;
+    double[] resultat = new double[indices.length];
+        for (int i = 0; i < indices.length; i++) {
+            resultat[i] = tab[indices[i]]; 
+        }
+        return resultat;
+    
     }
 
     /**
@@ -563,6 +603,15 @@ class Meteo {
      * @param ligneHaut le numéro de la ligne du haut à allumer
      */
     static void allumerNbCasesIntervalle(boolean[][] matrice, int colonne,int ligneBas, int ligneHaut) {
+    
+        for (int ligne = 0; ligne < 8; ligne++) {
+            if (ligne >= ligneHaut && ligne <= ligneBas) {
+                matrice[ligne][colonne] = true;
+            } else {
+                matrice[ligne][colonne] = false;
+            }
+        }
+    
     }
 
     /**
@@ -575,7 +624,6 @@ class Meteo {
         if (tab.length == 0) {
             return 0;
         }
-
         double max = tab[0];
 
         for (int i = 1; i < tab.length; i++) {
@@ -593,6 +641,9 @@ class Meteo {
      * @return la valeur minimale du tableau, ou 0 s'il est vide.
      */
     static double valeurMin(double[] tab) {
+        if (tab.length == 0) {
+            return 0;
+        }
         double min = tab[0];
         for (int i=1; i<tab.length; i++){
         if (tab[i]<min){
