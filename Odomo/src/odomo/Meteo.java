@@ -593,7 +593,13 @@ class Meteo {
      * @return la valeur minimale du tableau, ou 0 s'il est vide.
      */
     static double valeurMin(double[] tab) {
-        return 12.;
+        double min = tab[0];
+        for (int i=1; i<tab.length; i++){
+        if (tab[i]<min){
+        min = tab[i];
+        }
+        }
+        return min;
     }
 
     /**

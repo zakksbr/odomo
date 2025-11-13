@@ -204,7 +204,9 @@ class Ecran {
 static String titreHisto() {
     if (typeHisto == TYPE_HISTO_PLUVIO_HEURE) {             
         return "Pluviométrie des 24 dernières heures :";
-    } else { 
+    } else if (typeHisto == TYPE_HISTO_TEMPER_MINUTES){
+    return "Temp des 60 dernieres minutes :";
+    } else {
         return "";
     }
 }

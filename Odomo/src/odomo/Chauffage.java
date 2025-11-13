@@ -55,18 +55,11 @@ class Chauffage {
      */
     static boolean[][] matriceCreneaux() {
         boolean[][] matrice = new boolean[8][24];
-        
         for (int jour = 0; jour < 7; jour++) {
-
             for (int heure = 0; heure < 24; heure++) {
-                boolean boleeenCreneau1 = (heure >= creneau1[jour][0] && heure <= creneau1[jour][1]);
-
-                boolean booleenCreneau2 = (heure >= creneau2[jour][0] && heure <= creneau2[jour][1]);
-
-                if (boleeenCreneau1 || booleenCreneau2) {
+            if ((heure >= creneau1[jour][0] && heure <= creneau1[jour][1]) || (heure >= creneau2[jour][0] && heure <= creneau2[jour][1])){
                     matrice[jour][heure] = true;
-
-                }
+                    }
             }
         }
         return matrice;
@@ -76,15 +69,14 @@ class Chauffage {
      * Procédure de saisie des créneaux de chauffage.
      */
     static void saisieCreneaux() {
-    java.util.Scanner sc = new java.util.Scanner(System.in); // on déclare notre scanner (déjà utilisé dans la classe odomo)
     boolean saisieCorrecte;
+    java.util.Scanner sc = new java.util.Scanner(System.in); // on déclare notre scanner (déjà utilisé dans la classe odomo)
     
-        System.out.println("saisie des créneaux");
-        System.out.println("saisissez par exemple: ven;8;10;16;20");
+    System.out.println("saisie des créneaux");
+    System.out.println("saisissez par exemple: ven;8;10;16;20");
         
     do{
         System.out.println("votre saisie?");
-        
         String saisie = sc.nextLine();                          //on stoque notre saisie daans la variable "saisie"
         saisieCorrecte = traitementSaisieCreneaux(saisie);
          if (!saisieCorrecte) {
